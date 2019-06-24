@@ -3703,6 +3703,11 @@ electron-download@^4.1.0:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
+electron-log@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.npm.taobao.org/electron-log/download/electron-log-3.0.6.tgz#2291375572f6be5889f06fb32a35eab2930a1728"
+  integrity sha1-IpE3VXL2vliJ8G+zKjXqspMKFyg=
+
 electron-osx-sign@0.4.11:
   version "0.4.11"
   resolved "https://registry.npm.taobao.org/electron-osx-sign/download/electron-osx-sign-0.4.11.tgz#8377732fe7b207969f264b67582ee47029ce092f"
