@@ -4,14 +4,18 @@
     <button @click="doSomething">click me</button>
     <button @click="asyncMsg">asyncMsg</button>
     <button @click="syncMsg">syncMsg</button>
-    <button @click="saveDbBackground">saveDbBackground</button>
-    <button @click="saveDbRendererSide">saveDbRendererSide</button>
+    <button @click="saveModelBackground">saveModelBackground</button>
+    <button @click="saveModelRendererSide">saveModelRendererSide</button>
+    <button @click="saveStoreRendererSide">saveStoreRendererSide</button>
   </div>
 </template>
 <script>
 import log from "../log";
-import { ipcRenderer } from "electron";
+import * as path from "path";
+// eslint-disable-next-line no-unused-vars
+import { app, remote, ipcRenderer } from "electron";
 import { MyDemoModel } from "../common/MyDemoModel";
+import Datastore from "nedb-promises";
 
 const myrecordrnddev = async () => {
   let title =
@@ -29,6 +33,18 @@ const myrecordrnddev = async () => {
   await myDemo.save();
   console.log("myrecordrnddev.myDemo", myDemo);
   return myDemo;
+};
+
+const myStoreRndDev = async () => {
+  const myRndDataStore = Datastore.create({
+    filename: path.join(remote.app.getPath("userData"), "myrnddata.db"),
+    inMemoryOnly: false,
+    autoload: true,
+    timestampData: true
+  });
+  const mystorerecordnew = await myRndDataStore.insert({ doc: "yourrnddoc" });
+  console.log("rnd myRndDataStore", mystorerecordnew);
+  return mystorerecordnew;
 };
 
 export default {
@@ -57,14 +73,22 @@ export default {
       const message = `Synchronous message reply: ${reply}`;
       log.verbose("syncMsg reply", message);
     },
-    saveDbBackground() {
-      log.verbose("enter saveDbBackground");
+    saveModelBackground() {
+      log.verbose("enter saveModelBackground");
       ipcRenderer.send("record-insert", "arg1");
     },
-    saveDbRendererSide() {
-      log.verbose("enter saveDbRendererSide");
+    saveModelRendererSide() {
+      log.verbose("enter saveModelRendererSide");
       (async () => {
         console.log("myrecordrnddev", await myrecordrnddev());
+      })().catch(err => {
+        console.log(err);
+      });
+    },
+    saveStoreRendererSide() {
+      log.verbose("enter saveStoreRendererSide");
+      (async () => {
+        console.log("mystorerecordrndrec", await myStoreRndDev());
       })().catch(err => {
         console.log(err);
       });
