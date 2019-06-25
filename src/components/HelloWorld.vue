@@ -95,10 +95,14 @@
 </template>
 
 <script>
+import log from "../log";
 export default {
   name: "HelloWorld",
   props: {
     msg: String
+  },
+  created() {
+    log.verbose("use helloworld component");
   }
 };
 </script>

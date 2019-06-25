@@ -1,5 +1,5 @@
 "use strict";
-
+import log from "./log";
 import { app, protocol, BrowserWindow } from "electron";
 import {
   createProtocol,
@@ -17,6 +17,7 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 function createWindow() {
+  log.verbose("enter createWindow");
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
@@ -62,6 +63,7 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  log.verbose("app on ready");
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
