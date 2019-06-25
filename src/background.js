@@ -1,10 +1,14 @@
 "use strict";
 import log from "./log";
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import {
   createProtocol,
   installVueDevtools
 } from "vue-cli-plugin-electron-builder/lib";
+import MyDemoModel from "./common/MyDemoModel";
+import Datastore from "nedb-promises";
+import * as path from "path";
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -89,3 +93,55 @@ if (isDevelopment) {
     });
   }
 }
+
+// eslint-disable-next-line no-unused-vars
+ipcMain.on("asynchronous-message", (event, arg) => {
+  event.sender.send("asynchronous-reply", "pong");
+});
+
+// eslint-disable-next-line no-unused-vars
+ipcMain.on("synchronous-message", (event, arg) => {
+  event.returnValue = "pong";
+});
+
+const myrecorddev = async () => {
+  let title =
+    "BG Side" +
+    Math.random()
+      .toString(36)
+      .substring(2, 15) +
+    Math.random()
+      .toString(36)
+      .substring(2, 15);
+  let myDemo = new MyDemoModel({
+    title: title,
+    opAt: Date.now()
+  });
+  await myDemo.save();
+  console.log("myrecorddev.myDemo", myDemo);
+  return myDemo;
+};
+// eslint-disable-next-line no-unused-vars
+ipcMain.on("record-insert", (event, arg) => {
+  (async () => {
+    let record = await myrecorddev();
+    console.log("record", record);
+    event.sender.send("record-reply", record);
+  })().catch(err => {
+    console.log(err);
+  });
+});
+
+(async () => {
+  const myDataStore = Datastore.create({
+    filename: path.join(app.getPath("userData"), "mydata.db"),
+    inMemoryOnly: false,
+    autoload: true,
+    timestampData: true
+  });
+  const myrecordnew = await myDataStore.insert({ doc: "yourdoc" });
+  console.log("boot myDataStore", myrecordnew);
+  console.log("boot myrecorddev", await myrecorddev());
+})().catch(err => {
+  console.log(err);
+});
