@@ -4,6 +4,8 @@ node_modules
 
 # exclude yarn.lock to avoid mirrors issue.
 /yarn.lock
+# exclude yarn.lock to avoid mirrors issue.
+/package-lock.json
 
 # local env files
 .env.local
