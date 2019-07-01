@@ -7,6 +7,7 @@
     <button @click="saveModelBackground">saveModelBackground</button>
     <button @click="saveModelRendererSide">saveModelRendererSide</button>
     <button @click="saveStoreRendererSide">saveStoreRendererSide</button>
+    <button @click="callCarloBackend">callCarloBackend</button>
   </div>
 </template>
 <script>
@@ -59,6 +60,9 @@ export default {
     ipcRenderer.on("record-reply", (event, arg) => {
       console.log("record-reply", arg);
     });
+    ipcRenderer.on("carlo-reply", (event, arg) => {
+      console.log("carlo-reply", arg);
+    });
   },
   methods: {
     doSomething() {
@@ -92,6 +96,10 @@ export default {
       })().catch(err => {
         console.log(err);
       });
+    },
+    callCarloBackend() {
+      log.verbose("enter callCarloBackend");
+      ipcRenderer.send("carlo-start", "arg1");
     }
   }
 };

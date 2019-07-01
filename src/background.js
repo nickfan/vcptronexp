@@ -8,6 +8,9 @@ import {
 import MyDemoModel from "./common/MyDemoModel";
 import Datastore from "nedb-promises";
 import * as path from "path";
+import carlo from "carlo";
+import { rpc } from "carlo/rpc";
+import { Backend } from "./Backend";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -121,6 +124,22 @@ const myrecorddev = async () => {
   console.log("myrecorddev.myDemo", myDemo);
   return myDemo;
 };
+// eslint-disable-next-line no-unused-vars
+ipcMain.on("carlo-start", (event, arg) => {
+  (async () => {
+    carlo.launch().then(async app => {
+      app.serveFolder(__dirname);
+      // app.serveFolder(__static);
+      // app.on('exit', () => process.exit());
+      await app.load("index.html", rpc.handle(new Backend()));
+      // await app.load("https://github.com", rpc.handle(new Backend()));
+    });
+    event.sender.send("carlo-reply", "carlo-done");
+  })().catch(err => {
+    console.log(err);
+  });
+});
+
 // eslint-disable-next-line no-unused-vars
 ipcMain.on("record-insert", (event, arg) => {
   (async () => {
