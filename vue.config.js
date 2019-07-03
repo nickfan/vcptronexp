@@ -5,6 +5,7 @@ module.exports = {
   lintOnSave: true,
   pluginOptions: {
     electronBuilder: {
+      externals: ["carlo"],
       customFileProtocol: "app://./",
       // customFileProtocol: 'file://./',
       baseUrl: "app://./",
