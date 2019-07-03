@@ -31,7 +31,17 @@ module.exports = {
               arch: ["x64", "ia32"]
             }
           ]
-        }
+        },
+        linux: {
+          target: "AppImage"
+        },
+        publish: [
+          {
+            provider: "generic",
+            url: "http://localhost:8008/",
+            channel: "latest"
+          }
+        ]
       }
     }
   }

@@ -8,6 +8,7 @@
     <button @click="saveModelRendererSide">saveModelRendererSide</button>
     <button @click="saveStoreRendererSide">saveStoreRendererSide</button>
     <button @click="callCarloBackend">callCarloBackend</button>
+    <button @click="check4Update">check4Update</button>
   </div>
 </template>
 <script>
@@ -63,6 +64,9 @@ export default {
     ipcRenderer.on("carlo-reply", (event, arg) => {
       console.log("carlo-reply", arg);
     });
+    ipcRenderer.on("check4update-reply", (event, arg) => {
+      console.log("check4update-reply", arg);
+    });
   },
   methods: {
     doSomething() {
@@ -100,6 +104,10 @@ export default {
     callCarloBackend() {
       log.verbose("enter callCarloBackend");
       ipcRenderer.send("carlo-start", "arg1");
+    },
+    check4Update() {
+      log.verbose("enter check4Update");
+      ipcRenderer.send("check4update", "arg1");
     }
   }
 };

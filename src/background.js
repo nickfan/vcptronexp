@@ -8,6 +8,7 @@ import {
 import MyDemoModel from "./common/MyDemoModel";
 import Datastore from "nedb-promises";
 import * as path from "path";
+import { autoUpdater } from "electron-updater";
 import carlo from "carlo";
 import { rpc } from "carlo/rpc";
 import { Backend } from "./Backend";
@@ -146,6 +147,41 @@ ipcMain.on("record-insert", (event, arg) => {
     let record = await myrecorddev();
     console.log("record", record);
     event.sender.send("record-reply", record);
+  })().catch(err => {
+    console.log(err);
+  });
+});
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = "info";
+autoUpdater.on("checking-for-update", () => {
+  log.info("1check4update");
+});
+// eslint-disable-next-line no-unused-vars
+autoUpdater.on("update-available", (ev, info) => {
+  log.info("1update-isavailable", info);
+});
+autoUpdater.on("update-not-available", (ev, info) => {
+  log.info("1update-notavailable", info);
+});
+autoUpdater.on("error", (ev, err) => {
+  log.info("1update-error", err);
+});
+autoUpdater.on("download-progress", (ev, progressObj) => {
+  log.info("1update-progress", progressObj);
+});
+autoUpdater.on("update-downloaded", (ev, info) => {
+  log.info("1update-downloaded", info);
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();
+  }, 2000);
+});
+
+// eslint-disable-next-line no-unused-vars
+ipcMain.on("check4update", (event, arg) => {
+  (async () => {
+    autoUpdater.checkForUpdates();
+    event.sender.send("check4update-reply", "reply");
   })().catch(err => {
     console.log(err);
   });
