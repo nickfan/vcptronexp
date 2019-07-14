@@ -6,13 +6,7 @@ import {
   // eslint-disable-next-line no-unused-vars
   installVueDevtools
 } from "vue-cli-plugin-electron-builder/lib";
-import MyDemoModel from "./common/MyDemoModel";
-import Datastore from "nedb-promises";
-import * as path from "path";
 import { autoUpdater } from "electron-updater";
-import carlo from "carlo";
-import { rpc } from "carlo/rpc";
-import { Backend } from "./Backend";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -109,50 +103,6 @@ ipcMain.on("synchronous-message", (event, arg) => {
   event.returnValue = "pong";
 });
 
-const myrecorddev = async () => {
-  let title =
-    "BG Side" +
-    Math.random()
-      .toString(36)
-      .substring(2, 15) +
-    Math.random()
-      .toString(36)
-      .substring(2, 15);
-  let myDemo = new MyDemoModel({
-    title: title,
-    opAt: Date.now()
-  });
-  await myDemo.save();
-  console.log("myrecorddev.myDemo", myDemo);
-  return myDemo;
-};
-// eslint-disable-next-line no-unused-vars
-ipcMain.on("carlo-start", (event, arg) => {
-  (async () => {
-    carlo.launch().then(async app => {
-      app.serveFolder(__dirname);
-      // app.serveFolder(__static);
-      // app.on('exit', () => process.exit());
-      await app.load("index.html", rpc.handle(new Backend()));
-      // await app.load("https://github.com", rpc.handle(new Backend()));
-    });
-    event.sender.send("carlo-reply", "carlo-done");
-  })().catch(err => {
-    console.log(err);
-  });
-});
-
-// eslint-disable-next-line no-unused-vars
-ipcMain.on("record-insert", (event, arg) => {
-  (async () => {
-    let record = await myrecorddev();
-    console.log("record", record);
-    event.sender.send("record-reply", record);
-  })().catch(err => {
-    console.log(err);
-  });
-});
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 autoUpdater.on("checking-for-update", () => {
@@ -186,18 +136,4 @@ ipcMain.on("check4update", (event, arg) => {
   })().catch(err => {
     console.log(err);
   });
-});
-
-(async () => {
-  const myDataStore = Datastore.create({
-    filename: path.join(app.getPath("userData"), "mydata.db"),
-    inMemoryOnly: false,
-    autoload: true,
-    timestampData: true
-  });
-  const myrecordnew = await myDataStore.insert({ doc: "yourdoc" });
-  console.log("boot myDataStore", myrecordnew);
-  console.log("boot myrecorddev", await myrecorddev());
-})().catch(err => {
-  console.log(err);
 });

@@ -3,7 +3,7 @@ node_modules
 /dist
 
 # exclude yarn.lock to avoid mirrors issue.
-/yarn.lock
+#/yarn.lock
 # exclude yarn.lock to avoid mirrors issue.
 /package-lock.json
 
